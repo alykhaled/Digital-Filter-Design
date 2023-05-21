@@ -53,6 +53,8 @@ function updateZPlane() {
             .attr("data-y", d => d.y)
             .attr("r", 5)
             .attr("class", "zero")
+            .attr("fill", "white")
+            .attr("stroke", "black")
             .call(dragBehavior),
 
         update => update.attr("cx", d => d.x).attr("cy", d => d.y)
@@ -65,6 +67,8 @@ function updateZPlane() {
             enter => enter.append("circle")
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
+                .attr("data-x", d => d.x)
+                .attr("data-y", d => d.y)
                 .attr("r", 5)
                 .attr("class", "pole")
                 .call(dragBehavior),
@@ -93,20 +97,41 @@ const dragBehavior = d3.drag()
         const lastX = d3.select(this).attr("cx");
         const lastY = d3.select(this).attr("cy");
 
+        const isZero = d3.select(this).classed("zero");
         if (firstX == lastX && firstY == lastY) {
-            for (let i = 0; i < zeros.length; i++) {
-                if (zeros[i].x == firstX && zeros[i].y == firstY) {
-                    zeros.splice(i, 1);
+            if (isZero) {
+                for (let i = 0; i < zeros.length; i++) {
+                    if (zeros[i].x == firstX && zeros[i].y == firstY) {
+                        zeros.splice(i, 1);
+                    }
+                }
+            }
+            else {
+                for (let i = 0; i < poles.length; i++) {
+                    if (poles[i].x == firstX && poles[i].y == firstY) {
+                        poles.splice(i, 1);
+                    }
                 }
             }
         }
         else{
-            for (let i = 0; i < zeros.length; i++) {
-                if (zeros[i].x == firstX && zeros[i].y == firstY) {
-                    zeros[i].x = lastX;
-                    zeros[i].y = lastY;
+            if (isZero) {
+                for (let i = 0; i < zeros.length; i++) {
+                    if (zeros[i].x == firstX && zeros[i].y == firstY) {
+                        zeros[i].x = lastX;
+                        zeros[i].y = lastY;
+                    }
                 }
             }
+            else {
+                for (let i = 0; i < poles.length; i++) {
+                    if (poles[i].x == firstX && poles[i].y == firstY) {
+                        poles[i].x = lastX;
+                        poles[i].y = lastY;
+                    }
+                }
+            }
+            
         }
         updateZPlane();
     });
@@ -269,16 +294,19 @@ svg.on("click", function () {
     if (event.shiftKey) { // Use event.shiftKey instead of d3.event.shiftKey
         // Add conjugate zeros/poles
         zeros.push(point, { x: point.x, y: 500 - point.y });
-        // poles.push(point, { x: point.x, y: 500 - point.y });
+        poles.push(point, { x: point.x, y: 500 - point.y });
     } else {
         // Add single zero/pole
         zeros.push(point);
-        // poles.push(point);
+        poles.push(point);
         console.log(zeros);
     }
     updateZPlane();
     updateFrequencyResponse();
 });
+
+
+
 
 // Initialize the z-plane plot and frequency response graphs
 drawPlane();
