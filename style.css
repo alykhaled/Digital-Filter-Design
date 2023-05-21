@@ -4,16 +4,18 @@
 }
 
 #frequency-response {
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
     margin-top: 20px;
+    height: 500px;
 }
 
 #magnitude-response,
 #phase-response {
-    width: 400px;
-    height: 300px;
+    /* width: 400px; */
+    height: 200px;
 }
+
 
 .axis {
     stroke: #888;
