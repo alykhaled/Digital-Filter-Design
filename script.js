@@ -17,7 +17,7 @@ svg.append("circle")
     .attr("fill", "white")
     .attr("stroke", "black");
 
-// Draw the x-axis
+// Draw x-axis
 svg.append("line")
     .attr("x1", 0)
     .attr("y1", 250)
@@ -25,7 +25,7 @@ svg.append("line")
     .attr("y2", 250)
     .attr("class", "axis");
 
-// Draw the y-axis
+// Draw y-axis
 svg.append("line")
     .attr("x1", 250)
     .attr("y1", 0)
@@ -42,32 +42,60 @@ function updateZPlane() {
 
     // Draw zeros
     svg.selectAll(".zero")
-        .data(zeros)
-        .enter().append("circle")
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-        .attr("r", 5)
-        .attr("class", "zero")
-        .call(dragBehavior);
+    .data(zeros)
+    .join(
+        enter => enter.append("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("data-x", d => d.x)
+            .attr("data-y", d => d.y)
+            .attr("r", 5)
+            .attr("class", "zero")
+            .call(dragBehavior),
+        update => update.attr("cx", d => d.x).attr("cy", d => d.y)
+    );
 
-    // Draw poles
+    // Update poles
     svg.selectAll(".pole")
         .data(poles)
-        .enter().append("circle")
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-        .attr("r", 5)
-        .attr("class", "pole")
-        .call(dragBehavior);
+        .join(
+            enter => enter.append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", 5)
+                .attr("class", "pole")
+                .call(dragBehavior),
+            update => update.attr("cx", d => d.x).attr("cy", d => d.y)
+        );
 }
 
 // Define drag behavior for zeros and poles
 const dragBehavior = d3.drag()
+    .on("start", function () {
+        d3.select(this).raise().classed("active", true);
+    })
     .on("drag", function (d) {
-        d.x = d3.event.x;
-        d.y = d3.event.y;
-        updateZPlane();
+        const coordinates = d3.pointer(event);
+        d.x = coordinates[0];
+        d.y = coordinates[1];
+        d3.select(this)
+            .attr("cx", d.x)
+            .attr("cy", d.y);
         updateFrequencyResponse();
+    })
+    .on("end", function () {
+        d3.select(this).classed("active", false);
+        const firstX = d3.select(this).attr("data-x");
+        const firstY = d3.select(this).attr("data-y");
+        const lastX = d3.select(this).attr("cx");
+        const lastY = d3.select(this).attr("cy");
+        for (let i = 0; i < zeros.length; i++) {
+            if (zeros[i].x == firstX && zeros[i].y == firstY) {
+                zeros[i].x = lastX;
+                zeros[i].y = lastY;
+            }
+        }
+        updateZPlane();
     });
 
 // Function to update the frequency response graphs
@@ -97,7 +125,7 @@ svg.on("click", function () {
     } else {
         // Add single zero/pole
         zeros.push(point);
-        poles.push(point);
+        // poles.push(point);
         console.log(zeros);
     }
     updateZPlane();
