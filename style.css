@@ -1,0 +1,21 @@
+#z-plane {
+    width: 500px;
+    height: 500px;
+}
+
+#frequency-response {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+#magnitude-response,
+#phase-response {
+    width: 400px;
+    height: 300px;
+}
+
+.axis {
+    stroke: #888;
+    stroke-width: 1px;
+}
