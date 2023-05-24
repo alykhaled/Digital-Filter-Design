@@ -13,7 +13,6 @@
 
 </head>
 <body>
-
     <div class="mb-4 border-b bg-gray-50 dark:bg-gray-800">
         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" data-tabs-toggle="#myTabContent" role="tablist">
             <li class="mr-2" role="presentation">
@@ -56,17 +55,27 @@
             </div>
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="correct" role="tabpanel" aria-labelledby="correct-tab">
-            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">correct tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
+
         </div>
-        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="applyFilter" role="tabpanel" aria-labelledby="applyFilter-tab">
-            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">applyFilter tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
-        </div>
-        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Contacts tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
+        <div class="hidden p-4 rounded-lg " id="applyFilter" role="tabpanel" aria-labelledby="applyFilter-tab">
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-4">
+                <h2 class="text-lg font-medium mb-4">Original Signal</h2>
+                <canvas id="originalSignalCanvas"></canvas>
+            </div>
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-4">
+                <h2 class="text-lg font-medium mb-4">Filtered Signal</h2>
+                <canvas id="filteredSignalCanvas"></canvas>
+            </div>
+            <div class="flex items-center mt-4">
+                <label for="speed" class="mr-4 font-medium">Speed:</label>
+                <input type="range" id="speed" name="speed" min="1" max="10" value="1" class="w-full h-4 appearance-none rounded-full bg-gray-300 dark:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
+            </div>
         </div>
     </div>
     
     
+    <script src="transferFunction.js"></script>
     <script src="script.js"></script>
+    <script src="applyFilter.js"></script>
 </body>
 </html>
