@@ -1,19 +1,28 @@
 // Define constants and variables
 const zPlane = d3.select("#z-plane");
-let zeros = [];
-let poles = [];
+let zeros = [
+    {x: (0.1 * 200)+200 , y: 200},
+    {x: (0.5 * 200)+200 , y: 200},
+    {x: (0.6 * 200)+200 , y: 200},
+];
+let poles = [
+    {x: (0.5 * 200)+200 , y: 200},
+    {x: (0.9 * 200)+200 , y: 200},
+];
+// let zeros = [];
+// let poles = [];
 
 // Create the z-plane plot
 const svg = zPlane.append("svg")
-    .attr("width", 500)
-    .attr("height", 500)
+    .attr("width", 400)
+    .attr("height", 400)
     
 
 function drawPlane() {
     // Draw the unit circle
     svg.append("circle")
-        .attr("cx", 250)
-        .attr("cy", 250)
+        .attr("cx", 200)
+        .attr("cy", 200)
         .attr("r", 200)
         .attr("class", "unit-circle")
         .attr("fill", "white")
@@ -22,17 +31,17 @@ function drawPlane() {
     // Draw x-axis
     svg.append("line")
         .attr("x1", 0)
-        .attr("y1", 250)
-        .attr("x2", 500)
-        .attr("y2", 250)
+        .attr("y1", 200)
+        .attr("x2", 400)
+        .attr("y2", 200)
         .attr("class", "axis");
     
     // Draw y-axis
     svg.append("line")
-        .attr("x1", 250)
+        .attr("x1", 200)
         .attr("y1", 0)
-        .attr("x2", 250)
-        .attr("y2", 500)
+        .attr("x2", 200)
+        .attr("y2", 400)
         .attr("class", "axis");
 }   
 
@@ -56,15 +65,15 @@ function updateZPlane() {
             .attr("fill", "white")
             .attr("stroke", "black")
             .call(dragBehavior),
-
-        update => update.attr("cx", d => d.x).attr("cy", d => d.y)
-    );
-
-    // Update poles
-    svg.selectAll(".pole")
-        .data(poles)
-        .join(
-            enter => enter.append("circle")
+            
+            update => update.attr("cx", d => d.x).attr("cy", d => d.y)
+            );
+            
+            // Update poles
+            svg.selectAll(".pole")
+            .data(poles)
+            .join(
+                enter => enter.append("circle")
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
                 .attr("data-x", d => d.x)
@@ -134,12 +143,12 @@ const dragBehavior = d3.drag()
             
         }
         updateZPlane();
+        updateFrequencyResponse();
+
     });
 
-const magnitudeDOM = document.getElementById("magnitude-response");
-
 // Create the magnitude response chart
-const magnitudeChart = new Chart(magnitudeDOM.getContext("2d"), {
+const magnitudeChart = new Chart(document.getElementById("magnitude-response").getContext("2d"), {
     type: "line",
     data: {
         labels: [], // Placeholder labels
@@ -147,7 +156,9 @@ const magnitudeChart = new Chart(magnitudeDOM.getContext("2d"), {
             label: "Magnitude Response",
             data: [], // Placeholder data
             borderColor: "blue",
-            fill: false
+            fill: false,
+            pointRadius: 0 // Set pointRadius to 0 to remove circles
+
         }]
     },
     options: {
@@ -155,7 +166,6 @@ const magnitudeChart = new Chart(magnitudeDOM.getContext("2d"), {
         maintainAspectRatio: false,
         scales: {
             x: {
-                type: "logarithmic",
                 title: {
                     display: true,
                     text: "Frequency (Hz)"
@@ -180,7 +190,9 @@ const phaseChart = new Chart(document.getElementById("phase-response").getContex
             label: "Phase Response",
             data: [], // Placeholder data
             borderColor: "red",
-            fill: false
+            fill: false,
+            pointRadius: 0 // Set pointRadius to 0 to remove circles
+
         }]
     },
     options: {
@@ -188,7 +200,6 @@ const phaseChart = new Chart(document.getElementById("phase-response").getContex
         maintainAspectRatio: false,
         scales: {
             x: {
-                type: "logarithmic",
                 title: {
                     display: true,
                     text: "Frequency (Hz)"
@@ -199,59 +210,96 @@ const phaseChart = new Chart(document.getElementById("phase-response").getContex
                     display: true,
                     text: "Phase (degrees)"
                 },
-                suggestedMin: -180,
-                suggestedMax: 180,
-                stepSize: 45
             }
         }
     }
 });
 
+// Convert coordinates to polar coordinates
+function toPolar(x, y) {
+    let real = x - 200;
+    real = real / 200;
+    let imag = 200 - y;
+    imag = imag / 200;
+
+    return {real , imag};
+}
+
+function transferFunction(zeros,poles)
+{
+    let num = [1];
+    let den = [1];
+    for (let i = 0; i < zeros.length; i++)
+    {
+        let {real, imag} = toPolar(zeros[i].x, zeros[i].y);
+        num = conv(num, [1, -real]);
+    }
+    for (let i = 0; i < poles.length; i++)
+    {
+        let {real, imag} = toPolar(poles[i].x, poles[i].y);
+        den = conv(den, [1, -real]);
+    }
+    return [num, den];
+}
+
+function conv(a,b)
+{
+    let c = [];
+    for (let i = 0; i < a.length + b.length - 1; i++)
+    {
+        c[i] = 0;
+        for (let j = 0; j < a.length; j++)
+        {
+            if (i - j >= 0 && i - j < b.length)
+            {
+                c[i] += a[j] * b[i - j];
+            }
+        }
+    }
+    return c;
+}
+
+function freqz(num,den,freqLength)
+{
+    let w = [];
+    let h = [];
+    for (let i = 0; i < freqLength; i++)
+    {
+        w[i] = i * Math.PI / freqLength;
+        let numSum = math.complex(0, 0);
+        let denSum = math.complex(0, 0);
+        for (let j = 0; j < num.length; j++)
+        {
+            numSum = math.add(numSum, math.multiply(num[j], math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
+        }
+        for (let j = 0; j < den.length; j++)
+        {
+            denSum = math.add(denSum, math.multiply(den[j], math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
+        }
+
+        h[i] = math.divide(numSum, denSum);
+    }
+    return [w, h];
+}
+
 // Function to calculate frequency response
 function calculateFrequencyResponse() {
-    const sampleRate = 44100; // Sample rate in Hz
-    const frequencyBins = 100; // Number of frequency bins
-
-    const nyquistFrequency = sampleRate / 2;
-    const frequencyStep = Math.pow(nyquistFrequency, 1 / frequencyBins);
-
-    const frequencies = [];
-    const magnitudes = [];
-    const phases = [];
-
-    for (let i = 0; i < frequencyBins; i++) {
-        const frequency = Math.pow(frequencyStep, i);
-        const omega = 2 * Math.PI * frequency / sampleRate;
-
-        let magnitude = 0;
-        let phase = 0;
-
-        for (const zero of zeros) {
-            const distance = Math.sqrt(Math.pow(zero.x - 250, 2) + Math.pow(zero.y - 250, 2));
-            const poleAngle = Math.atan2(250 - zero.y, zero.x - 250);
-            const zeroAngle = Math.atan2(250 - zero.y, zero.x - 250) + omega;
-
-            magnitude += Math.pow(distance, 2) / (Math.pow(distance, 2) - 2 * distance * Math.cos(zeroAngle - poleAngle) + 1);
-            phase += Math.atan2(Math.sin(zeroAngle - poleAngle), Math.cos(zeroAngle - poleAngle));
-        }
-
-        for (const pole of poles) {
-            const distance = Math.sqrt(Math.pow(pole.x - 250, 2) + Math.pow(pole.y - 250, 2));
-            const poleAngle = Math.atan2(250 - pole.y, pole.x - 250);
-            const zeroAngle = Math.atan2(250 - pole.y, pole.x - 250) + omega;
-
-            magnitude /= Math.pow(distance, 2) / (Math.pow(distance, 2) - 2 * distance * Math.cos(zeroAngle - poleAngle) + 1);
-            phase -= Math.atan2(Math.sin(zeroAngle - poleAngle), Math.cos(zeroAngle - poleAngle));
-        }
-
-        magnitude = 10 * Math.log10(magnitude); // Convert magnitude to dB
-        phase *= (180 / Math.PI); // Convert phase to degrees
-
-        frequencies.push(frequency);
-        magnitudes.push(magnitude);
-        phases.push(phase);
+    // TODO: Calculate the numerator and denominator of polynomial transfer function representation from zeros and poles
+    const [num, den] = transferFunction(zeros, poles);
+    console.log(num);
+    console.log(den);
+    // TODO: Compute the frequency response given the numerator and denominator
+    const [frequencies, h] = freqz(num, den, 100);
+    let magnitudes = [];
+    let phases = [];
+    for (let i = 0; i < h.length; i++)
+    {
+        magnitudes[i] = math.re(h[i]);
+        phases[i] = math.im(h[i]);
     }
-
+    // console.log(magnitudes);
+    console.log(phases);
+    console.log(h);
     return { frequencies, magnitudes, phases };
 }
 
@@ -275,32 +323,19 @@ svg.on("click", function () {
         x: coordinates[0],
         y: coordinates[1]
     };
-    const clickedElement = d3.select(event.target);
-    console.log(clickedElement);
-    // Check if the clicked element is a zero or pole
-    if (clickedElement.classed("zero")) {
-        // Delete the clicked zero
-        zeros = zeros.filter(z => !(z.x === point.x && z.y === point.y));
-        updateZPlane();
-        updateFrequencyResponse();
-        return;
-    } else if (clickedElement.classed("pole")) {
-        // Delete the clicked pole
-        poles = poles.filter(p => !(p.x === point.x && p.y === point.y));
-        updateZPlane();
-        updateFrequencyResponse();
-        return;
-    }
+
     if (event.shiftKey) { // Use event.shiftKey instead of d3.event.shiftKey
         // Add conjugate zeros/poles
-        zeros.push(point, { x: point.x, y: 500 - point.y });
-        poles.push(point, { x: point.x, y: 500 - point.y });
+        zeros.push(point, { x: point.x, y: 400 - point.y });
+        // poles.push(point, { x: point.x, y: 400 - point.y });
+
     } else {
         // Add single zero/pole
         zeros.push(point);
-        poles.push(point);
+        // poles.push(point);
         console.log(zeros);
     }
+    console.log(toPolar(point.x, point.y));
     updateZPlane();
     updateFrequencyResponse();
 });
