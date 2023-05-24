@@ -2,12 +2,13 @@
 const zPlane = d3.select("#z-plane");
 let zeros = [
     {x: (0.1 * 200)+200 , y: 200},
-    {x: (0.5 * 200)+200 , y: 200},
+    {x: (0.4 * 200)+200 , y: 200},
     {x: (0.6 * 200)+200 , y: 200},
+    // {x: (0.6 * 200)+200 , y: 200},
 ];
 let poles = [
     {x: (0.5 * 200)+200 , y: 200},
-    {x: (0.9 * 200)+200 , y: 200},
+    // {x: (0.9 * 200)+200 , y: 200},
 ];
 // let zeros = [];
 // let poles = [];
@@ -221,8 +222,9 @@ function toPolar(x, y) {
     real = real / 200;
     let imag = 200 - y;
     imag = imag / 200;
-
-    return {real , imag};
+    let mag = Math.sqrt(real * real + imag * imag);
+    let phase = Math.atan2(imag, real);
+    return {mag, phase};
 }
 
 function transferFunction(zeros,poles)
@@ -231,13 +233,13 @@ function transferFunction(zeros,poles)
     let den = [1];
     for (let i = 0; i < zeros.length; i++)
     {
-        let {real, imag} = toPolar(zeros[i].x, zeros[i].y);
-        num = conv(num, [1, -real]);
+        let {mag, phase} = toPolar(zeros[i].x, zeros[i].y);
+        num = conv(num, [1, -mag]);
     }
     for (let i = 0; i < poles.length; i++)
     {
-        let {real, imag} = toPolar(poles[i].x, poles[i].y);
-        den = conv(den, [1, -real]);
+        let {mag, phase} = toPolar(poles[i].x, poles[i].y);
+        den = conv(den, [1, -mag]);
     }
     return [num, den];
 }
@@ -286,25 +288,20 @@ function freqz(num,den,freqLength)
 function calculateFrequencyResponse() {
     // TODO: Calculate the numerator and denominator of polynomial transfer function representation from zeros and poles
     const [num, den] = transferFunction(zeros, poles);
-    console.log(num);
-    console.log(den);
+
     // TODO: Compute the frequency response given the numerator and denominator
-    const [frequencies, h] = freqz(num, den, 100);
+    const [frequencies, h] = freqz(num, den, 1000);
     let magnitudes = [];
     let phases = [];
-    for (let i = 0; i < h.length; i++)
-    {
-        magnitudes[i] = math.re(h[i]);
-        phases[i] = math.im(h[i]);
-    }
-    // console.log(magnitudes);
-    console.log(phases);
-    console.log(h);
+    magnitudes = h.map(x => 20 * Math.log10(math.abs(x)));
+    // phases = phases.map(x => x * 180 / Math.PI);
+    phases = h.map(x => math.atan2(math.im(x), math.re(x)) * 180 / Math.PI);
     return { frequencies, magnitudes, phases };
 }
 
 // Function to update the frequency response plots
 function updateFrequencyResponse() {
+    console.log("Updating frequency response");
     const { frequencies, magnitudes, phases } = calculateFrequencyResponse();
 
     magnitudeChart.data.labels = frequencies;
@@ -326,8 +323,9 @@ svg.on("click", function () {
 
     if (event.shiftKey) { // Use event.shiftKey instead of d3.event.shiftKey
         // Add conjugate zeros/poles
-        zeros.push(point, { x: point.x, y: 400 - point.y });
+        // zeros.push(point, { x: point.x, y: 400 - point.y });
         // poles.push(point, { x: point.x, y: 400 - point.y });
+        poles.push(point);
 
     } else {
         // Add single zero/pole
