@@ -93,12 +93,12 @@ function filter(amplitude, num, den) {
         let filteredValue = 0;
         for (let j = 0; j < num.length; j++) {
             if (i - j >= 0) {
-                filteredValue += num[j] * amplitude[i - j];
+                filteredValue += num[j].real * amplitude[i - j];
             }
         }
         for (let j = 1; j < den.length; j++) {
             if (i - j >= 0) {
-                filteredValue -= den[j] * filteredAmplitude[i - j];
+                filteredValue -= den[j].real * filteredAmplitude[i - j];
             }
         }
         filteredAmplitude.push(filteredValue);

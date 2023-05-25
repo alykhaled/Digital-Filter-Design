@@ -143,7 +143,7 @@ function addCorrectedZeroPoles(a)
 {
     let {real, imaginary} = toRealAndImaginary(a);
     let zero = {x: (real * 200)+200 , y: 200-(imaginary * 200)};
-    let pole = {x: (real * 200)+200 , y: 201-(-imaginary * 200)};
+    let pole = {x: (real * 200)+201 , y: 201-(-imaginary * 200)};
     correctedZeroes.push(zero);
     correctedPoles.push(pole);
     updateCorrectedZPlane();

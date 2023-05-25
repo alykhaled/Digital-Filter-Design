@@ -9,39 +9,33 @@ function toPolar(x, y) {
     return {mag, phase};
 }
 
-function transferFunction(zeros,poles)
-{
-    let num = [1];
-    let den = [1];
-    for (let i = 0; i < zeros.length; i++)
-    {
-        let {mag, phase} = toPolar(zeros[i].x, zeros[i].y);
-        num = conv(num, [1, -mag]);
+function transferFunction(zeros, poles) {
+    let num = [{ real: 1, imag: 0 }];
+    let den = [{ real: 1, imag: 0 }];
+    for (let i = 0; i < zeros.length; i++) {
+      let { mag, phase } = toPolar(zeros[i].x, zeros[i].y);
+      num = conv(num, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
     }
-    for (let i = 0; i < poles.length; i++)
-    {
-        let {mag, phase} = toPolar(poles[i].x, poles[i].y);
-        den = conv(den, [1, -mag]);
+    for (let i = 0; i < poles.length; i++) {
+      let { mag, phase } = toPolar(poles[i].x, poles[i].y);
+      den = conv(den, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
     }
     return [num, den];
 }
 
-function conv(a,b)
-{
+function conv(a, b) {
     let c = [];
-    for (let i = 0; i < a.length + b.length - 1; i++)
-    {
-        c[i] = 0;
-        for (let j = 0; j < a.length; j++)
-        {
-            if (i - j >= 0 && i - j < b.length)
-            {
-                c[i] += a[j] * b[i - j];
-            }
+    for (let i = 0; i < a.length + b.length - 1; i++) {
+      c[i] = { real: 0, imag: 0 };
+      for (let j = 0; j < a.length; j++) {
+        if (i - j >= 0 && i - j < b.length) {
+          c[i].real += a[j].real * b[i - j].real - a[j].imag * b[i - j].imag;
+          c[i].imag += a[j].real * b[i - j].imag + a[j].imag * b[i - j].real;
         }
+      }
     }
     return c;
-}
+  } 
 
 function freqz(num,den,freqLength)
 {
@@ -54,11 +48,13 @@ function freqz(num,den,freqLength)
         let denSum = math.complex(0, 0);
         for (let j = 0; j < num.length; j++)
         {
-            numSum = math.add(numSum, math.multiply(num[j], math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
+            let temp = math.complex(num[j].real, num[j].imag);
+            numSum = math.add(numSum, math.multiply(temp, math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
         }
         for (let j = 0; j < den.length; j++)
         {
-            denSum = math.add(denSum, math.multiply(den[j], math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
+            let temp = math.complex(den[j].real, den[j].imag);
+            denSum = math.add(denSum, math.multiply(temp, math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
         }
 
         h[i] = math.divide(numSum, denSum);
