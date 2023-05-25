@@ -9,6 +9,9 @@
     margin-top: 20px;
     height: 500px;
 }
+.phaseWrapper {
+    height: 470px;
+}
 
 .plotWrapper {
     width: 100%;
@@ -17,6 +20,10 @@
 #magnitude-response,
 #phase-response {
     /* width: 400px; */
+    height: 200px;
+}
+
+#filter-phase-plot{
     height: 200px;
 }
 

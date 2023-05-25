@@ -1,13 +1,13 @@
 // Define constants and variables
 const zPlane = d3.select("#z-plane");
 let zeros = [
-    {x: (0.1 * 200)+200 , y: 200},
-    {x: (0.4 * 200)+200 , y: 200},
-    {x: (0.6 * 200)+200 , y: 200},
+    // {x: (0.1 * 200)+200 , y: 200},
+    // {x: (0.4 * 200)+200 , y: 200},
     // {x: (0.6 * 200)+200 , y: 200},
+    {x: (0 * 200)+200 , y: 200},
 ];
 let poles = [
-    {x: (0.5 * 200)+200 , y: 200},
+    // {x: (0* 200)+200 , y: 200},
     // {x: (0.9 * 200)+200 , y: 200},
 ];
 // let zeros = [];
@@ -242,6 +242,8 @@ function updateFrequencyResponse() {
     phaseChart.data.labels = frequencies;
     phaseChart.data.datasets[0].data = phases;
     phaseChart.update();
+
+    updatePhasePlotAfterFilter(frequencies,phases);
 }
 
 // Add event listeners for placing zeros and poles
@@ -252,23 +254,46 @@ svg.on("click", function () {
         x: coordinates[0],
         y: coordinates[1]
     };
+    const conjugateToggle = document.getElementById("conjugateToggle").checked;
 
     if (event.shiftKey) { // Use event.shiftKey instead of d3.event.shiftKey
-        // Add conjugate zeros/poles
         // zeros.push(point, { x: point.x, y: 400 - point.y });
         // poles.push(point, { x: point.x, y: 400 - point.y });
         poles.push(point);
+        if (conjugateToggle) {
+            poles.push({ x: point.x, y: 400 - point.y });
+        }
 
     } else {
-        // Add single zero/pole
         zeros.push(point);
-        // poles.push(point);
-        console.log(zeros);
+        if (conjugateToggle) {
+            zeros.push({ x: point.x, y: 400 - point.y });
+        }
     }
     console.log(toPolar(point.x, point.y));
     updateZPlane();
     updateFrequencyResponse();
 });
+
+document.getElementById("clearZeros").addEventListener("click", function () {
+    zeros = [];
+    updateZPlane();
+    updateFrequencyResponse();
+});
+
+document.getElementById("clearPoles").addEventListener("click", function () {
+    poles = [];
+    updateZPlane();
+    updateFrequencyResponse();
+});
+document.getElementById("clearAll").addEventListener("click", function () {
+    zeros = [];
+    poles = [];
+    updateZPlane();
+    updateFrequencyResponse();
+});
+
+
 
 
 // Initialize the z-plane plot and frequency response graphs
