@@ -35,10 +35,26 @@ function conv(a, b) {
       }
     }
     return c;
-  } 
+} 
 
 function freqz(num,den,freqLength)
 {
+  /*
+    Calculates the frequency response of a filter given its numerator and denominator coefficients.
+    params:
+        num: array of numerator coefficients
+        den: array of denominator coefficients
+        freqLength: number of frequency points to calculate
+    returns:
+        w: array of frequencies
+        h: array of frequency response values
+
+                jw                 -jw              -jwM
+        jw    B(e  )    b[0] + b[1]e    + ... + b[M]e
+     H(e  ) = ------ = -----------------------------------
+                 jw                 -jw              -jwN
+              A(e  )    a[0] + a[1]e    + ... + a[N]e
+  */
     let w = [];
     let h = [];
     for (let i = 0; i < freqLength; i++)
