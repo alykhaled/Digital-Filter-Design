@@ -123,22 +123,26 @@
                     </div>
                 </div>
             </div>
-              
-            
         </div>
-        <div class="hidden p-4 rounded-lg  " id="applyFilter" role="tabpanel" aria-labelledby="applyFilter-tab">
+        <div class="hidden p-4 rounded-lg " id="applyFilter" role="tabpanel" aria-labelledby="applyFilter-tab">
+            <div class="mb-3">
+                <input type="file" class="opacity-0 absolute z-50" />
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  Browse for Signal
+                </button>
+              </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden text-white mb-3">
-                <div class="p-4">
+                <div class="p-4 phaseWrapper">
                     <h3 class="font-semibold text-lg mb-2">Original Signal</h3>
-                    <div class="plotWrapper bg-white">
+                    <div class="plotWrapper phaseWrapper  bg-white" style="height: 400px;">
                         <canvas id="originalSignalCanvas"></canvas>
                     </div>
                 </div>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden text-white mb-3">
-                <div class="p-4">
+                <div class="p-4 phaseWrapper">
                     <h3 class="font-semibold text-lg mb-2">Filtered Signal</h3>
-                    <div class="plotWrapper bg-white">
+                    <div class="plotWrapper phaseWrapper  bg-white" style="height: 400px;">
                         <canvas id="filteredSignalCanvas"></canvas>
                     </div>
                 </div>
