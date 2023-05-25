@@ -34,5 +34,5 @@
 }
 
 .zero, .pole{
-    cursor: move;
+    cursor: grab;
 }

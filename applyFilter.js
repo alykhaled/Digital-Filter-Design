@@ -134,6 +134,7 @@ const intervalId = setInterval(() => {
 
 document.getElementById("speedSlider").addEventListener("input", (event) => {
     const speed = event.target.value;
+    document.getElementById("speedValue").innerHTML = speed;
     chunkSize = speed;
     clearInterval(intervalId);
     const newintervalId = setInterval(() => {

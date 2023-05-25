@@ -124,19 +124,46 @@ function updateCorrectedZPlane() {
             update => update.attr("cx", d => d.x).attr("cy", d => d.y)
             );
             
-            // Update poles
-            svgPhase.selectAll(".pole")
-            .data(correctedPoles)
-            .join(
-                enter => enter.append("circle")
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y)
-                .attr("data-x", d => d.x)
-                .attr("data-y", d => d.y)
-                .attr("r", 5)
-                .attr("class", "pole"),
-            update => update.attr("cx", d => d.x).attr("cy", d => d.y)
-        );
+    // Update poles
+    svgPhase.selectAll(".pole")
+    .data(correctedPoles)
+    .join(
+        enter => enter.append("g")
+            .attr("transform", d => `translate(${d.x}, ${d.y})`)
+            .attr("data-x", d => d.x)
+            .attr("data-y", d => d.y)
+            .attr("class", "pole")
+            .call(dragBehavior)
+            .each(function () {
+                d3.select(this).append("circle")
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y)
+                    .attr("data-x", d => d.x)
+                    .attr("data-y", d => d.y)
+                    .attr("r", 2)
+                    .attr("class", "pole")
+                    .attr("fill", "white")
+                    // .attr("stroke", "black")
+
+                d3.select(this).append("line")
+                    .attr("x1", -5)
+                    .attr("y1", -5)
+                    .attr("x2", 5)
+                    .attr("y2", 5)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 3);
+                d3.select(this).append("line")
+                    .attr("x1", -5)
+                    .attr("y1", 5)
+                    .attr("x2", 5)
+                    .attr("y2", -5)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 3);
+            }),
+
+
+        update => update.attr("cx", d => d.x).attr("cy", d => d.y)
+    );
 }
 
 function addCorrectedZeroPoles(a)
