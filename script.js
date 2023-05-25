@@ -3,12 +3,13 @@ const zPlane = d3.select("#z-plane");
 let zeros = [
     // {x: (0.1 * 200)+200 , y: 200},
     // {x: (0.4 * 200)+200 , y: 200},
-    // {x: (0.6 * 200)+200 , y: 200},
-    {x: (0 * 200)+200 , y: 200},
+    {x: (0.5 * 200)+200 , y: +200-(0.3 * 200)},
+    // {x: (0 * 200)+200 , y: 200},
 ];
 let poles = [
     // {x: (0* 200)+200 , y: 200},
     // {x: (0.9 * 200)+200 , y: 200},
+    {x: (-0.5 * 200)+200 , y: 201-(-0.3 * 200)},
 ];
 // let zeros = [];
 // let poles = [];
@@ -218,9 +219,10 @@ const phaseChart = new Chart(document.getElementById("phase-response").getContex
 
 // Function to calculate frequency response
 function calculateFrequencyResponse() {
+    console.log(zeros, poles);
     // TODO: Calculate the numerator and denominator of polynomial transfer function representation from zeros and poles
     const [num, den] = transferFunction(zeros, poles);
-
+    console.log(num, den);
     // TODO: Compute the frequency response given the numerator and denominator
     const [frequencies, h] = freqz(num, den, 1000);
     let magnitudes = [];
@@ -270,6 +272,7 @@ svg.on("click", function () {
             zeros.push({ x: point.x, y: 400 - point.y });
         }
     }
+    console.log(point);
     console.log(toPolar(point.x, point.y));
     updateZPlane();
     updateFrequencyResponse();
@@ -292,8 +295,6 @@ document.getElementById("clearAll").addEventListener("click", function () {
     updateZPlane();
     updateFrequencyResponse();
 });
-
-
 
 
 // Initialize the z-plane plot and frequency response graphs

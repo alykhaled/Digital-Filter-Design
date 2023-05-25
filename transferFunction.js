@@ -4,8 +4,8 @@ function toPolar(x, y) {
     real = real / 200;
     let imag = 200 - y;
     imag = imag / 200;
-    let mag = Math.sqrt(real * real + imag * imag);
-    let phase = Math.atan2(imag, real);
+    let mag = real;
+    let phase = imag;
     return {mag, phase};
 }
 

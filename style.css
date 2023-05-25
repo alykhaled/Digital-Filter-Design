@@ -32,3 +32,7 @@
     stroke: #888;
     stroke-width: 1px;
 }
+
+.zero, .pole{
+    cursor: move;
+}
