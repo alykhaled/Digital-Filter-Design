@@ -169,7 +169,6 @@ function addCorrectedZeroPoles(a)
     let point = toRealAndImaginary(a);
     let conjugate = math.conj(point);
     let pole = point;
-    console.log(point);
     let zero = math.divide(1, conjugate);
     pole = {x: (pole.re * 200)+200 , y: 200-(pole.im * 200)};
     zero = {x: (zero.re * 200)+200 , y: 200-(zero.im * 200)};
@@ -217,7 +216,6 @@ function calculateFilterAfterCorrection()
     let finalPoles = poles;
     finalZeroes = finalZeroes.concat(correctedZeroes);
     finalPoles = finalPoles.concat(correctedPoles);
-    console.log(finalZeroes, finalPoles);
     const [num, den] = transferFunction(finalZeroes, finalPoles);
     const [frequencies, h] = freqz(num, den, 1000);
     phases = h.map(x => math.atan2(math.im(x), math.re(x)) * 180 / Math.PI);
@@ -226,7 +224,6 @@ function calculateFilterAfterCorrection()
 
 function updatePhasePlotAfterFilter() {
     const { frequencies,phases } = calculateFilterAfterCorrection();
-    // console.log(phases);
     phaseAfterFilterPlot.data.labels = frequencies;
     phaseAfterFilterPlot.data.datasets[0].data = phases;
     phaseAfterFilterPlot.update();
@@ -234,9 +231,7 @@ function updatePhasePlotAfterFilter() {
 
 function calculateCorrectedFilter()
 {
-    console.log(correctedZeroes, correctedPoles);
     const [num, den] = transferFunction(correctedZeroes, correctedPoles);
-    console.log(num, den);
 
     // TODO: Compute the frequency response given the numerator and denominator
     const [frequencies, h] = freqz(num, den, 1000);
@@ -259,7 +254,6 @@ function calculatePhaseResponse()
 
 document.getElementById("addCorrectedFilter").addEventListener("click", () => {
     let a = document.getElementById("correctedZeroPole").value;
-    console.log(a);
     addCorrectedZeroPoles(a);
     const filtersList = document.getElementById("filtersList");
     const newFilter = document.createElement("div");
@@ -274,7 +268,6 @@ document.getElementById("addCorrectedFilter").addEventListener("click", () => {
 });
 
 function handleDelete(e){
-    // console.log(e.parentNode.firstChild.nextSibling);
     let a = e.parentNode.firstChild.nextSibling.innerHTML;
     deleteCorrectedZeroPoles(a);
     e.parentNode.remove();

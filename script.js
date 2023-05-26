@@ -232,10 +232,8 @@ const phaseChart = new Chart(document.getElementById("phase-response").getContex
 
 // Function to calculate frequency response
 function calculateFrequencyResponse() {
-    console.log(zeros, poles);
     // TODO: Calculate the numerator and denominator of polynomial transfer function representation from zeros and poles
     const [num, den] = transferFunction(zeros, poles);
-    console.log(num, den);
     // TODO: Compute the frequency response given the numerator and denominator
     const [frequencies, h] = freqz(num, den, 1000);
     let magnitudes = [];
@@ -264,7 +262,6 @@ function updateFrequencyResponse() {
 // Add event listeners for placing zeros and poles
 svg.on("click", function () {
     const coordinates = d3.pointer(event); // Pass the event object explicitly
-    console.log(coordinates);
     const point = {
         x: coordinates[0],
         y: coordinates[1]
@@ -285,8 +282,7 @@ svg.on("click", function () {
             zeros.push({ x: point.x, y: 400 - point.y });
         }
     }
-    console.log(point);
-    console.log(toComplex(point.x, point.y));
+
     updateZPlane();
     updateFrequencyResponse();
 });

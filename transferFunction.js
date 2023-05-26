@@ -51,12 +51,10 @@ function transferFunction(zeros, poles) {
     let den = [{ real: 1, imag: 0 }];
     for (let i = 0; i < zeros.length; i++) {
       let { mag, phase } = toComplex(zeros[i].x, zeros[i].y);
-      console.log(mag, phase);
       num = conv(num, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
     }
     for (let i = 0; i < poles.length; i++) {
       let { mag, phase } = toComplex(poles[i].x, poles[i].y);
-      console.log(mag, phase);
       den = conv(den, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
     }
     return [num, den];

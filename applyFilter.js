@@ -101,7 +101,6 @@ document.getElementById("signalFileInput").addEventListener("change", (event) =>
         });
         const [num, den] = transferFunction(zeros, poles);
         filteredAmplitude = filter(amplitude, num, den);
-        console.log(filteredAmplitude);
         originalSignalPlot.options.scales.y.min = minOriginalAmplitude;
         originalSignalPlot.options.scales.y.max = maxOriginalAmplitude;
         originalSignalPlot.update();
@@ -126,7 +125,6 @@ function filter(amplitude, num, den) {
         filteredAmplitude.push(filteredValue);
         maxFilteredAmplitude = Math.max(maxFilteredAmplitude, filteredValue);
         minFilteredAmplitude = Math.min(minFilteredAmplitude, filteredValue);
-
     }
     filteredSignalPlot.options.scales.y.min = minFilteredAmplitude;
     filteredSignalPlot.options.scales.y.max = maxFilteredAmplitude;
