@@ -1,5 +1,17 @@
-// Convert coordinates to polar coordinates
 function toComplex(x, y) {
+  /*
+    Converts coordinates to complex numbers.
+    params:
+        x: x-coordinate
+        y: y-coordinate
+    returns:
+        mag: magnitude
+        phase: phase
+
+    The idea is to convert the coordinates to the z-plane, then convert the z-plane coordinates to polar form.
+
+
+  */
     let real = x - 200;
     real = real / 200;
     let imag = 200 - y;
@@ -10,6 +22,33 @@ function toComplex(x, y) {
 }
 
 function transferFunction(zeros, poles) {
+  /*
+    Calculates the numerator and denominator coefficients of a transfer function given the zeros and poles.
+    params:
+        zeros: array of zeros
+        poles: array of poles
+    returns:
+        num: array of numerator coefficients
+        den: array of denominator coefficients
+
+    The idea is to convert the zeros and poles to their polynomial form, then multiply them together.
+    Converting the factors to polynomial form is done by multiplying the factors together with the conjugate.
+    For example, the factor (s + 1) is converted to (s + 1)(s + 1*) = s^2 + 2s + 1.
+    The polynomial form of the transfer function is then multiplied together to get the numerator and denominator.
+
+              (s - z1)(s - z2)...(s - zn)                  (s^2 - 2s + 2)
+    H(s) = ------------------------------ -----> H(s) = ------------------
+              (s - p1)(s - p2)...(s - pn)                   (s^3 + s^2)
+    
+    Example:  
+    Given the zeros [1 + j, 1 - j] and poles [0, 0, -1], the transfer function is:
+
+              (s - 1 + j)(s - 1 - j)                      (s^2 - 2s + 2)
+    H(s) = ------------------------------ -----> H(s) = ------------------
+                (s)(s)(s + 1)                              (s^3 + s^2)     
+    
+    Then the numerator and denominator coefficients are equal to [1, -2, 2] and [1, 1, 0, 0] respectively.
+  */
     let num = [{ real: 1, imag: 0 }];
     let den = [{ real: 1, imag: 0 }];
     for (let i = 0; i < zeros.length; i++) {
