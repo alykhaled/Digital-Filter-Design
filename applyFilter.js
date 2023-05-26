@@ -6,6 +6,10 @@ let currentAmplitude = [];
 let currentFilteredAmplitude = [];
 let currentIndex = 0;
 let chunkSize = 1;
+let maxOriginalAmplitude = -Infinity;
+let maxFilteredAmplitude = -Infinity;
+let minOriginalAmplitude = Infinity;
+let minFilteredAmplitude = Infinity;
 
 const originalSignalPlot = new Chart(document.getElementById("originalSignalCanvas").getContext("2d"), {
     type: "line",
@@ -35,6 +39,9 @@ const originalSignalPlot = new Chart(document.getElementById("originalSignalCanv
                 title: {
                     display: true,
                     text: "Amplitude"
+                },
+                ticks: {
+                    stepSize: 100
                 }
             }
         }
@@ -69,11 +76,16 @@ const filteredSignalPlot = new Chart(document.getElementById("filteredSignalCanv
                 title: {
                     display: true,
                     text: "Amplitude"
+                },
+                ticks: {
+                    stepSize: 100
                 }
             }
         }
     }
 });
+
+
 
 document.getElementById("signalFileInput").addEventListener("change", (event) => {
     const selectedFile = event.target.files[0];
@@ -84,10 +96,15 @@ document.getElementById("signalFileInput").addEventListener("change", (event) =>
             const column = row.split(",");
             time.push(parseFloat(column[0]));
             amplitude.push(parseFloat(column[1]));
+            maxOriginalAmplitude = Math.max(maxOriginalAmplitude, parseFloat(column[1]));
+            minOriginalAmplitude = Math.min(minOriginalAmplitude, parseFloat(column[1]));
         });
         const [num, den] = transferFunction(zeros, poles);
         filteredAmplitude = filter(amplitude, num, den);
         console.log(filteredAmplitude);
+        originalSignalPlot.options.scales.y.min = minOriginalAmplitude;
+        originalSignalPlot.options.scales.y.max = maxOriginalAmplitude;
+        originalSignalPlot.update();
     }
     reader.readAsText(selectedFile);
 });
@@ -107,7 +124,13 @@ function filter(amplitude, num, den) {
             }
         }
         filteredAmplitude.push(filteredValue);
+        maxFilteredAmplitude = Math.max(maxFilteredAmplitude, filteredValue);
+        minFilteredAmplitude = Math.min(minFilteredAmplitude, filteredValue);
+
     }
+    filteredSignalPlot.options.scales.y.min = minFilteredAmplitude;
+    filteredSignalPlot.options.scales.y.max = maxFilteredAmplitude;
+    filteredSignalPlot.update();
     return filteredAmplitude;
 }
 
