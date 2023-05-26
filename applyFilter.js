@@ -1,3 +1,12 @@
+let time = [];
+let amplitude = [];
+let filteredAmplitude = [];
+let currentTime = [];
+let currentAmplitude = [];
+let currentFilteredAmplitude = [];
+let currentIndex = 0;
+let chunkSize = 1;
+
 const originalSignalPlot = new Chart(document.getElementById("originalSignalCanvas").getContext("2d"), {
     type: "line",
     data: {
@@ -66,10 +75,6 @@ const filteredSignalPlot = new Chart(document.getElementById("filteredSignalCanv
     }
 });
 
-let time = [];
-let amplitude = [];
-let filteredAmplitude = [];
-
 document.getElementById("signalFileInput").addEventListener("change", (event) => {
     const selectedFile = event.target.files[0];
     const reader = new FileReader();
@@ -106,13 +111,6 @@ function filter(amplitude, num, den) {
     return filteredAmplitude;
 }
 
-
-
-let currentTime = [];
-let currentAmplitude = [];
-let currentFilteredAmplitude = [];
-let currentIndex = 0;
-let chunkSize = 1;
 const intervalId = setInterval(() => {
     if (currentIndex < time.length) {
         for (let i = 0; i < chunkSize; i++) {
@@ -130,7 +128,6 @@ const intervalId = setInterval(() => {
         filteredSignalPlot.update();
     }
 }, 1000);
-
 
 document.getElementById("speedSlider").addEventListener("input", (event) => {
     const speed = event.target.value;

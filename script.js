@@ -1,25 +1,11 @@
-// Define constants and variables
-const zPlane = d3.select("#z-plane");
-let zeros = [
-    // {x: (0.1 * 200)+200 , y: 200},
-    // {x: (0.4 * 200)+200 , y: 200},
-    {x: (0.5 * 200)+200 , y: +200-(0.3 * 200)},
-    // {x: (0 * 200)+200 , y: 200},
-];
-let poles = [
-    // {x: (0* 200)+200 , y: 200},
-    // {x: (0.9 * 200)+200 , y: 200},
-    {x: (-0.5 * 200)+200 , y: 201-(-0.3 * 200)},
-];
-// let zeros = [];
-// let poles = [];
+let zeros = [];
+let poles = [];
 
 // Create the z-plane plot
-const svg = zPlane.append("svg")
+const svg = d3.select("#z-plane").append("svg")
     .attr("width", 400)
     .attr("height", 400)
     
-
 function drawPlane() {
     // Draw the unit circle
     svg.append("circle")

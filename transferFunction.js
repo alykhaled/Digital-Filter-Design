@@ -33,7 +33,7 @@ function conv(a, b) {
           c[i].imag += a[j].real * b[i - j].imag + a[j].imag * b[i - j].real;
         }
       }
-    }
+    }correctedZeroes
     return c;
 } 
 

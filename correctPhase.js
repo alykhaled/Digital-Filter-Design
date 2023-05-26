@@ -1,7 +1,8 @@
-const zPlanePhase = d3.select("#z-plane-phase");
+let correctedZeroes = [];
+let correctedPoles = [];
 
 // Create the z-plane plot
-const svgPhase = zPlanePhase.append("svg")
+const svgPhase = d3.select("#z-plane-phase").append("svg")
     .attr("width", 400)
     .attr("height", 400)
 
@@ -99,8 +100,6 @@ const phaseAfterFilterPlot = new Chart(document.getElementById("phase-plot-after
     }
 });
 
-let correctedZeroes = [];
-let correctedPoles = [];
 
 function updateCorrectedZPlane() {
     // Remove all existing zeros and poles
@@ -133,14 +132,13 @@ function updateCorrectedZPlane() {
             .attr("data-x", d => d.x)
             .attr("data-y", d => d.y)
             .attr("class", "pole")
-            .call(dragBehavior)
             .each(function () {
                 d3.select(this).append("circle")
                     .attr("cx", d => d.x)
                     .attr("cy", d => d.y)
                     .attr("data-x", d => d.x)
                     .attr("data-y", d => d.y)
-                    .attr("r", 2)
+                    .attr("r", 0)
                     .attr("class", "pole")
                     .attr("fill", "white")
                     // .attr("stroke", "black")
@@ -168,9 +166,15 @@ function updateCorrectedZPlane() {
 
 function addCorrectedZeroPoles(a)
 {
-    let {real, imaginary} = toRealAndImaginary(a);
-    let zero = {x: (real * 200)+200 , y: 200-(imaginary * 200)};
-    let pole = {x: (real * 200)+201 , y: 201-(-imaginary * 200)};
+    let point = toRealAndImaginary(a);
+    let conjugate = math.conj(point);
+    let pole = point;
+    console.log(point);
+    let zero = math.divide(1, conjugate);
+    pole = {x: (pole.re * 200)+200 , y: 200-(pole.im * 200)};
+    zero = {x: (zero.re * 200)+200 , y: 200-(zero.im * 200)};
+    // let zero = {x: (real * 200)+200 , y: 200-(imaginary * 200)};
+    // let pole = {x: (real * 200)+201 , y: 200-(-imaginary * 200)};
     correctedZeroes.push(zero);
     correctedPoles.push(pole);
     updateCorrectedZPlane();
@@ -184,14 +188,18 @@ function toRealAndImaginary(a)
     let imaginary = a.split("+")[1].split("j")[0];
     real = parseFloat(real);
     imaginary = parseFloat(imaginary);
-    return {real, imaginary};
+    let complex = math.complex(real, imaginary);
+    return complex;
 }
 
 function deleteCorrectedZeroPoles(a)
 {
-    let {real, imaginary} = toRealAndImaginary(a);
-    let zero = {x: (real * 200)+200 , y: 200-(imaginary * 200)};
-    let pole = {x: (-real * 200)+200 , y: 201-(-imaginary * 200)};
+    let point = toRealAndImaginary(a);
+    let conjugate = math.conj(point);
+    let pole = point;
+    let zero = math.divide(1, point);
+    pole = {x: (pole.re * 200)+200 , y: 200-(pole.im * 200)};
+    zero = {x: (zero.re * 200)+200 , y: 200-(zero.im * 200)};
     // let pole = zero;
     // pole.x = zero.x;
     // pole.y = zero.y * -1;
