@@ -286,7 +286,7 @@ svg.on("click", function () {
         }
     }
     console.log(point);
-    console.log(toPolar(point.x, point.y));
+    console.log(toComplex(point.x, point.y));
     updateZPlane();
     updateFrequencyResponse();
 });

@@ -1,5 +1,5 @@
 // Convert coordinates to polar coordinates
-function toPolar(x, y) {
+function toComplex(x, y) {
     let real = x - 200;
     real = real / 200;
     let imag = 200 - y;
@@ -13,11 +13,13 @@ function transferFunction(zeros, poles) {
     let num = [{ real: 1, imag: 0 }];
     let den = [{ real: 1, imag: 0 }];
     for (let i = 0; i < zeros.length; i++) {
-      let { mag, phase } = toPolar(zeros[i].x, zeros[i].y);
+      let { mag, phase } = toComplex(zeros[i].x, zeros[i].y);
+      console.log(mag, phase);
       num = conv(num, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
     }
     for (let i = 0; i < poles.length; i++) {
-      let { mag, phase } = toPolar(poles[i].x, poles[i].y);
+      let { mag, phase } = toComplex(poles[i].x, poles[i].y);
+      console.log(mag, phase);
       den = conv(den, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
     }
     return [num, den];
