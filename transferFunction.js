@@ -9,8 +9,6 @@ function toComplex(x, y) {
         phase: phase
 
     The idea is to convert the coordinates to the z-plane, then convert the z-plane coordinates to polar form.
-
-
   */
     let real = x - 200;
     real = real / 200;
@@ -43,7 +41,7 @@ function transferFunction(zeros, poles) {
     Example:  
     Given the zeros [1 + j, 1 - j] and poles [0, 0, -1], the transfer function is:
 
-              (s - 1 + j)(s - 1 - j)                      (s^2 - 2s + 2)
+              (s - 1 - j)(s - 1 + j)                      (s^2 - 2s + 2)
     H(s) = ------------------------------ -----> H(s) = ------------------
                 (s)(s)(s + 1)                              (s^3 + s^2)     
     
