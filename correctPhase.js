@@ -3,7 +3,7 @@ let correctedPoles = [];
 
 // Create the z-plane plot
 const svgPhase = d3.select("#z-plane-phase").append("svg")
-    .attr("width", 700)
+    .attr("width", "100%")
     .attr("height", 400)
 
 function drawPlanePhase() {
