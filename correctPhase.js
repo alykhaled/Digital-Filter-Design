@@ -177,7 +177,7 @@ function addCorrectedZeroPoles(a)
     correctedZeroes.push(zero);
     correctedPoles.push(pole);
     updateCorrectedZPlane();
-    calculatePhaseResponse();
+    // calculatePhaseResponse(correctedZeroes, correctedPoles);
     updatePhasePlotAfterFilter();
 }
 
@@ -205,7 +205,7 @@ function deleteCorrectedZeroPoles(a)
     correctedZeroes = correctedZeroes.filter((item) => item.x !== zero.x && item.y !== zero.y);
     correctedPoles = correctedPoles.filter((item) => item.x !== pole.x && item.y !== pole.y);
     updateCorrectedZPlane();
-    calculatePhaseResponse();
+    // calculatePhaseResponse(correctedZeroes, correctedPoles);
     updatePhasePlotAfterFilter();
 
 }
@@ -224,14 +224,16 @@ function calculateFilterAfterCorrection()
 
 function updatePhasePlotAfterFilter() {
     const { frequencies,phases } = calculateFilterAfterCorrection();
-    phaseAfterFilterPlot.data.labels = frequencies;
+    const tempFrequencies = frequencies.map(x => x.toFixed(2));
+
+    phaseAfterFilterPlot.data.labels = tempFrequencies;
     phaseAfterFilterPlot.data.datasets[0].data = phases;
     phaseAfterFilterPlot.update();
 }
 
-function calculateCorrectedFilter()
+function calculateCorrectedFilter(zeros, poles)
 {
-    const [num, den] = transferFunction(correctedZeroes, correctedPoles);
+    const [num, den] = transferFunction(zeros, poles);
 
     // TODO: Compute the frequency response given the numerator and denominator
     const [frequencies, h] = freqz(num, den, 1000);
@@ -243,17 +245,19 @@ function calculateCorrectedFilter()
     return { frequencies, magnitudes, phases };
 }
 
-function calculatePhaseResponse()
+function calculatePhaseResponse(zeros, poles)
 {
-    const { frequencies, magnitudes, phases } = calculateCorrectedFilter();
-    phasePlot.data.labels = frequencies;
+    const { frequencies, magnitudes, phases } = calculateCorrectedFilter(zeros,poles);
+    const tempFrequencies = frequencies.map(x => x.toFixed(2));
+
+    phasePlot.data.labels = tempFrequencies;
     phasePlot.data.datasets[0].data = phases;
     phasePlot.update();
 
 }
 
 document.getElementById("addCorrectedFilter").addEventListener("click", () => {
-    let a = document.getElementById("correctedZeroPole").value;
+    let a = selectedFilter;
     addCorrectedZeroPoles(a);
     const filtersList = document.getElementById("filtersList");
     const newFilter = document.createElement("div");
@@ -267,6 +271,18 @@ document.getElementById("addCorrectedFilter").addEventListener("click", () => {
     filtersList.appendChild(newFilter);
 });
 
+document.getElementById("correctedZeroPole").addEventListener("change", () => {
+    let a = document.getElementById("correctedZeroPole").value;
+    // addCorrectedZeroPoles(a);
+    let point = toRealAndImaginary(a);
+    let conjugate = math.conj(point);
+    let pole = point;
+    let zero = math.divide(1, conjugate);
+    pole = {x: (pole.re * 200)+200 , y: 200-(pole.im * 200)};
+    zero = {x: (zero.re * 200)+200 , y: 200-(zero.im * 200)};
+    calculatePhaseResponse([zero], [pole]);
+});
+
 function handleDelete(e){
     let a = e.parentNode.firstChild.nextSibling.innerHTML;
     deleteCorrectedZeroPoles(a);
@@ -278,10 +294,51 @@ document.getElementById("customFilterButton").addEventListener("click", () => {
     let customFilter = document.getElementById("customFilterInput").value;
     document.getElementById("customFilterInput").value = "";    
     const filtersDropdown = document.getElementById("correctedZeroPole");
-    const newFilter = document.createElement("option");
-    newFilter.innerHTML = customFilter;
+    const newFilter = document.createElement("label");
+    const newInput = document.createElement("input");
+    newInput.type = "radio";
+    newInput.name = "zeroPole";
+    newInput.value = customFilter;
+    newInput.addEventListener("change", () => {
+        let a = newInput.value;
+        if (newInput.checked) {
+            selectedFilter = newInput.value;
+        }
+        // addCorrectedZeroPoles(a);
+        let point = toRealAndImaginary(a);
+        let conjugate = math.conj(point);
+        let pole = point;
+        let zero = math.divide(1, conjugate);
+        pole = {x: (pole.re * 200)+200 , y: 200-(pole.im * 200)};
+        zero = {x: (zero.re * 200)+200 , y: 200-(zero.im * 200)};
+        calculatePhaseResponse([zero], [pole]);
+    });
+    
+    newFilter.appendChild(newInput);
+    newFilter.appendChild(document.createTextNode(customFilter));
     filtersDropdown.appendChild(newFilter);
 });
+let selectedFilter=null;
+let filters = document.querySelectorAll('input[name="zeroPole"]');
+filters.forEach((filter) => {
+    
+    filter.addEventListener("change", () => {
+        let a = filter.value;
+        if (filter.checked) {
+            selectedFilter = filter.value;
+
+        }
+        // addCorrectedZeroPoles(a);
+        let point = toRealAndImaginary(a);
+        let conjugate = math.conj(point);
+        let pole = point;
+        let zero = math.divide(1, conjugate);
+        pole = {x: (pole.re * 200)+200 , y: 200-(pole.im * 200)};
+        zero = {x: (zero.re * 200)+200 , y: 200-(zero.im * 200)};
+        calculatePhaseResponse([zero], [pole]);
+    });
+});
+
 
 
 drawPlanePhase();

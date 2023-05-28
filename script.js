@@ -248,11 +248,12 @@ function calculateFrequencyResponse() {
 function updateFrequencyResponse() {
     const { frequencies, magnitudes, phases } = calculateFrequencyResponse();
 
-    magnitudeChart.data.labels = frequencies;
+    const tempFrequencies = frequencies.map(x => x.toFixed(2));
+    magnitudeChart.data.labels = tempFrequencies;
     magnitudeChart.data.datasets[0].data = magnitudes;
     magnitudeChart.update();
 
-    phaseChart.data.labels = frequencies;
+    phaseChart.data.labels = tempFrequencies;
     phaseChart.data.datasets[0].data = phases;
     phaseChart.update();
 

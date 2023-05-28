@@ -174,4 +174,3 @@ document.getElementById("speedSlider").addEventListener("input", (event) => {
     }
     , 1000);
 });
-
