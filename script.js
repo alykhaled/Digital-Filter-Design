@@ -76,7 +76,6 @@ function updateZPlane() {
                     .attr("r", 2)
                     .attr("class", "pole")
                     .attr("fill", "white")
-                    // .attr("stroke", "black")
 
                 d3.select(this).append("line")
                     .attr("x1", -5)
@@ -85,6 +84,7 @@ function updateZPlane() {
                     .attr("y2", 5)
                     .attr("stroke", "black")
                     .attr("stroke-width", 3);
+                    
                 d3.select(this).append("line")
                     .attr("x1", -5)
                     .attr("y1", 5)
@@ -93,8 +93,6 @@ function updateZPlane() {
                     .attr("stroke", "black")
                     .attr("stroke-width", 3);
             }),
-
-
         update => update.attr("cx", d => d.x).attr("cy", d => d.y)
     );
 }
