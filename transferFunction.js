@@ -10,13 +10,11 @@ function toComplex(x, y) {
 
     The idea is to convert the coordinates to the z-plane, then convert the z-plane coordinates to polar form.
   */
-    let real = x - 200;
-    real = real / 200;
-    let imag = 200 - y;
-    imag = imag / 200;
-    let mag = real;
-    let phase = imag;
-    return {mag, phase};
+    let re = x - 200;
+    re = re / 200;
+    let im = 200 - y;
+    im = im / 200;
+    return math.complex(re, im);
 }
 
 function transferFunction(zeros, poles) {
@@ -47,32 +45,33 @@ function transferFunction(zeros, poles) {
     
     Then the numerator and denominator coefficients are equal to [1, -2, 2] and [1, 1, 0, 0] respectively.
   */
-    let num = [{ real: 1, imag: 0 }];
-    let den = [{ real: 1, imag: 0 }];
+    let num = [math.complex(1, 0)];
+    let den = [math.complex(1, 0)];
     for (let i = 0; i < zeros.length; i++) {
-      let { mag, phase } = toComplex(zeros[i].x, zeros[i].y);
-      num = multiply(num, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
+      let zero = toComplex(zeros[i].x, zeros[i].y);
+      num = multiply(num, [math.complex(1, 0), math.complex(-zero.re, -zero.im)]);
     }
     for (let i = 0; i < poles.length; i++) {
-      let { mag, phase } = toComplex(poles[i].x, poles[i].y);
-      den = multiply(den, [{ real: 1, imag: 0 }, { real: -mag, imag: -phase }]);
+      let pole = toComplex(poles[i].x, poles[i].y);
+      den = multiply(den, [math.complex(1, 0), math.complex(-pole.re, -pole.im)]);
     }
     return [num, den];
 }
 
 function multiply(a, b) {
-    let c = [];
-    for (let i = 0; i < a.length + b.length - 1; i++) {
-      c[i] = { real: 0, imag: 0 };
-      for (let j = 0; j < a.length; j++) {
-        if (i - j >= 0 && i - j < b.length) {
-          c[i].real += a[j].real * b[i - j].real - a[j].imag * b[i - j].imag;
-          c[i].imag += a[j].real * b[i - j].imag + a[j].imag * b[i - j].real;
-        }
+  let c = [];
+  a = math.complex(a);
+  b = math.complex(b);
+  for (let i = 0; i < a.length + b.length - 1; i++) {
+    c[i] = math.complex(0, 0);
+    for (let j = 0; j < a.length; j++) {
+      if (i - j >= 0 && i - j < b.length) {
+        c[i] = math.add(c[i], math.multiply(a[j], b[i - j]));
       }
     }
-    return c;
-} 
+  }
+  return c;
+}
 
 function freqz(num,den,freqLength)
 {
@@ -101,12 +100,12 @@ function freqz(num,den,freqLength)
         let denSum = math.complex(0, 0);
         for (let j = 0; j < num.length; j++)
         {
-            let temp = math.complex(num[j].real, num[j].imag);
+            let temp = math.complex(num[j].re, num[j].im);
             numSum = math.add(numSum, math.multiply(temp, math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
         }
         for (let j = 0; j < den.length; j++)
         {
-            let temp = math.complex(den[j].real, den[j].imag);
+            let temp = math.complex(den[j].re, den[j].im);
             denSum = math.add(denSum, math.multiply(temp, math.complex(Math.cos(w[i] * j), -Math.sin(w[i] * j))));
         }
 
